@@ -25,6 +25,17 @@ services:
             - caddy:/data
             - .:/app
 
+    registry:
+        restart: unless-stopped
+        image: registry:3.0
+        depends_on:
+            - redis
+        volumes:
+            - registry:/var/lib/registry
+            - ./registry.yml:/etc/distribution/config.yml
+        environment:
+            - REGISTRY_HTTP_SECRET=${REGISTRY_HTTP_SECRET}
+
     mysql:
         restart: unless-stopped
         image: mariadb:lts-noble
@@ -43,3 +54,4 @@ services:
 volumes:
     caddy:
     mysql:
+    registry:

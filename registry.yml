@@ -1,0 +1,33 @@
+version: 0.1
+log:
+  level: debug
+  fields:
+    service: registry
+    environment: development
+storage:
+  cache:
+    blobdescriptor: redis
+  filesystem:
+    rootdirectory: /var/lib/registry
+  maintenance:
+    uploadpurging:
+      enabled: false
+  tag:
+    concurrencylimit: 8
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+redis:
+  addrs: [redis:6379]
+  maxidleconns: 16
+  poolsize: 64
+  connmaxidletime: 300s
+  dialtimeout: 10ms
+  readtimeout: 10ms
+  writetimeout: 10ms
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
