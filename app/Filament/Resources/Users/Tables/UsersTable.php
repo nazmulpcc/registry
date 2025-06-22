@@ -2,15 +2,11 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use App\Enums\Status;
+use App\Filament\Columns\StatusColumn;
 use App\Models\User;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Support\Colors\Color;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -29,21 +25,8 @@ class UsersTable
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
-                IconColumn::make('status')
-                    ->alignCenter()
-                    ->getStateUsing(fn(User $record) => $record->status->isActive())
-                    ->action(Action::make('toggle-status')
-                        ->disabled(fn(User $record) => $record->is(filament()->auth()->user()))
-                        ->color(Color::Red)
-                        ->icon(Heroicon::AdjustmentsHorizontal)
-                        ->requiresConfirmation()
-                        ->successNotificationTitle(__('Status updated.'))
-                        ->action(fn(User $record) => $record->update([
-                            'status' => $record->status->isActive()
-                                ? Status::InActive
-                                : Status::Active,
-                        ])))
-                    ->boolean(),
+                StatusColumn::make()
+                    ->disabled(fn(User $record) => $record->is(filament()->auth()->user())),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

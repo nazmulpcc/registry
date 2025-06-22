@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_repositories', function (Blueprint $table) {
+        Schema::create('repository_user', function (Blueprint $table) {
             $table->foreignId('user_id')
                 ->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('repository_id')

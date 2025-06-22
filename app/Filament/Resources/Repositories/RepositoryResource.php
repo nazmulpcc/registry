@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Repositories;
 
 use App\Enums\Status;
+use App\Filament\Columns\StatusColumn;
 use App\Filament\Resources\Repositories\Pages\CreateRepository;
 use App\Filament\Resources\Repositories\Pages\EditRepository;
 use App\Filament\Resources\Repositories\Pages\ListRepositories;
+use App\Filament\Resources\Repositories\RelationManagers\PermissionsRelationManager;
 use App\Models\Repository;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -19,6 +21,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class RepositoryResource extends Resource
 {
@@ -32,17 +35,26 @@ class RepositoryResource extends Resource
             ->columns(1)
             ->components([
                 TextInput::make('name')
+                    ->readOnlyOn('edit')
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (string $state, Set $set){
+                    ->afterStateUpdated(function (?string $state, Set $set){
                         $set('fqn', $state);
                     })
-                    ->required(),
+                    ->required()
+                    ->helperText(__('The name of the repository, should be lowercase and alphanumeric.')),
                 TextInput::make('fqn')
                     ->readOnly()
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->label(__('FQN'))
-                    ->prefix(filament()->auth()->user()->username . '/')
+                    ->prefix(function (?Repository $record): string {
+                        return $record?->exists
+                            ? Str::before($record->fqn, '/') . '/'
+                            : filament()->auth()->user()->username . '/';
+                    })
+                    ->formatStateUsing(function (?string $state): ?string {
+                        return Str::afterLast($state, '/');
+                    })
                     ->dehydrateStateUsing(function (TextInput $component, string $state){
                         return $component->getPrefixLabel() . $state;
                     }),
@@ -62,8 +74,7 @@ class RepositoryResource extends Resource
                     ->sortable(),
                 TextColumn::make('fqn')
                     ->searchable(),
-                TextColumn::make('status')
-                    ->searchable(),
+                StatusColumn::make(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -89,7 +100,7 @@ class RepositoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PermissionsRelationManager::class,
         ];
     }
 

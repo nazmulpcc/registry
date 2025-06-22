@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,6 +23,9 @@ use Illuminate\Support\Carbon;
  */
 class Repository extends Model
 {
+    protected $casts = [
+        'status' => Status::class,
+    ];
     protected static function booted(): void
     {
         static::creating(function (self $repository) {
@@ -34,11 +38,16 @@ class Repository extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    public function permissions(): HasMany
+    {
+        return $this->hasMany(RepositoryPermission::class, 'repository_id');
+    }
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_repositories')
             ->withPivot(['permissions'])
-            ->withCasts(['permissions' => 'json'])
-            ->withTimestamps();
+            ->using(RepositoryPermission::class)
+            ->as('permissions');
     }
 }
