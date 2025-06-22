@@ -1,0 +1,11 @@
+vendor
+.idea
+node_modules
+*.log
+.git
+Dockerfile
+docker-compose.*
+.docker
+storage/caddy
+storage/database
+*.key

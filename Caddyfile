@@ -1,0 +1,16 @@
+{$APP_DOMAIN}:443 {
+	log
+
+	encode gzip
+	root * /app/public
+
+	reverse_proxy http://app:8000
+	file_server
+
+	header {
+		-X-Powered-By
+		-Server
+	}
+
+	tls {$CERTIFICATE_MODE:internal}
+}
