@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Enums\Status;
+use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,12 +17,16 @@ class UserForm
             ->components([
                 TextInput::make('name')
                     ->required(),
+                TextInput::make('username')
+                    ->readOnlyOn('edit')
+                    ->required()
+                    ->unique(ignoreRecord: true),
                 TextInput::make('email')
                     ->email()
                     ->required(),
                 TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->visibleOn('create')
+                    ->password(),
                 Select::make('status')
                     ->required()
                     ->enum(Status::class)
