@@ -31,3 +31,9 @@ health:
     enabled: true
     interval: 10s
     threshold: 3
+auth:
+  token:
+    realm: https://registry.wip/api/auth/registry
+    service: registry.wip
+    issuer: registry.wip
+    rootcertbundle: /certs/token.crt

@@ -6,7 +6,6 @@ RUN composer install  \
     --ignore-platform-reqs \
     --no-ansi \
     --no-autoloader \
-    --no-dev \
     --no-interaction \
     --no-scripts
 
@@ -14,7 +13,7 @@ COPY . /app/
 RUN composer dump-autoload --optimize --classmap-authoritative
 
 
-FROM registry.nazmul.io/nazmul/php:8.4-cli
+FROM nazmulpcc/php:8.4-cli
 
 LABEL maintainer="Nazmul Alam <n@zmul.dev>"
 WORKDIR /app

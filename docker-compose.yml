@@ -1,5 +1,7 @@
 services:
     app:
+        build:
+            context: .
         restart: unless-stopped
         image: nazmulpcc/registry:latest
         env_file:
@@ -33,6 +35,7 @@ services:
         volumes:
             - registry:/var/lib/registry
             - ./registry.yml:/etc/distribution/config.yml
+            - ./storage/keys:/certs
         environment:
             - REGISTRY_HTTP_SECRET=${REGISTRY_HTTP_SECRET}
 
